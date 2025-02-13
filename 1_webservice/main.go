@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,13 +18,7 @@ func main() {
 
 	router.Post("/{id}", func(response http.ResponseWriter, request *http.Request) {
 		id := chi.URLParam(request, "id")
-		// name, err := io.ReadAll(request.Body)
-		err = json.NewDecoder(request.Body).Decode(&nom)
-		if err != nil {
-			http.Error(response, "Failed to read request body", http.StatusBadRequest)
-			return
-		}
-		role, err := io.ReadAll(request.Body)
+		name, err := io.ReadAll(request.Body)
 		if err != nil {
 			http.Error(response, "Failed to read request body", http.StatusBadRequest)
 			return
@@ -33,9 +26,8 @@ func main() {
 		mutex.Lock()
 		defer mutex.Unlock()
 		users[id] = string(name)
-		users[id] = string(role)
-		fmt.Fprintf(response, "%s", string(name)+" "+string(role))
-		fmt.Println("POST: ", id, " ", string(nom)+" "+string(role))
+		fmt.Fprintf(response, "%s", string(name))
+		fmt.Println("POST: ", id, " ", string(nom))
 	})
 
 	router.Get("/{id}", func(response http.ResponseWriter, request *http.Request) {
